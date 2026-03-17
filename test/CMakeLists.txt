@@ -21,6 +21,7 @@ target_link_libraries(${PROJECT_NAME}.test
     gtest
     gmock
 )
+add_test(NAME ST-3.test COMMAND ST-3.test)
 
 install(TARGETS ${PROJECT_NAME}.test
         DESTINATION "${tool_dest}")
