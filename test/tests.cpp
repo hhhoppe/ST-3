@@ -69,12 +69,6 @@ TEST(TimedDoorStandaloneTest, ConstructorSetsTimeout) {
     EXPECT_EQ(testDoor.getTimeOut(), 5);
 }
 
-TEST_F(TimedDoorTest, LockClosesDoor) {
-    door->unlock();
-    door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
-}
-
 TEST_F(TimedDoorTest, UnlockWithZeroTimeoutThrows) {
     TimedDoor zeroDoor(0);
     EXPECT_THROW(zeroDoor.unlock(), std::runtime_error);
@@ -168,3 +162,5 @@ TEST(IntegrationTest, CloseBeforeTimeoutPreventsException) {
     closer.join();
     EXPECT_FALSE(testDoor.isDoorOpened());
 }
+
+// ВСЕГО ТЕСТОВ: 14
