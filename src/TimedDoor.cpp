@@ -15,10 +15,6 @@ TimedDoor::TimedDoor(int timeout)
     , iTimeout(timeout)
     , isOpened(false) {}
 
-TimedDoor::~TimedDoor() {
-    delete adapter;
-}
-
 bool TimedDoor::isDoorOpened() {
     return isOpened;
 }
