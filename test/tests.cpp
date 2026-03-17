@@ -13,12 +13,12 @@ using ::testing::Return;
 // ========== МОК-КЛАССЫ ==========
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
@@ -27,14 +27,14 @@ public:
 // ========== ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ==========
 
 class TimerHelper {
-public:
+ public:
     void triggerTimeout(TimerClient* client) {
         client->Timeout();
     }
 };
 
 class DoorHelper {
-public:
+ public:
     void closeDoor(Door* door) { door->lock(); }
     void openDoor(Door* door) { door->unlock(); }
     bool getDoorState(Door* door) { return door->isDoorOpened(); }
@@ -43,7 +43,7 @@ public:
 // ========== ТЕСТОВЫЙ ФИКСТУР ==========
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door;
     DoorTimerAdapter* adapter;
 
@@ -112,7 +112,7 @@ TEST_F(TimedDoorTest, AdapterTimeoutOnOpenDoorThrows) {
 TEST(TimerMockTest, RegisterCallsTimeout) {
     Timer timer;
     MockTimerClient mockClient;
-    
+
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     timer.tregister(0, &mockClient);
 }
@@ -120,7 +120,7 @@ TEST(TimerMockTest, RegisterCallsTimeout) {
 TEST(TimerClientMockTest, TimeoutViaHelper) {
     MockTimerClient mockClient;
     TimerHelper helper;
-    
+
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     helper.triggerTimeout(&mockClient);
 }
@@ -130,7 +130,7 @@ TEST(TimerClientMockTest, TimeoutViaHelper) {
 TEST(DoorMockTest, LockViaHelper) {
     MockDoor mockDoor;
     DoorHelper helper;
-    
+
     EXPECT_CALL(mockDoor, lock()).Times(1);
     helper.closeDoor(&mockDoor);
 }
@@ -138,7 +138,7 @@ TEST(DoorMockTest, LockViaHelper) {
 TEST(DoorMockTest, UnlockViaHelper) {
     MockDoor mockDoor;
     DoorHelper helper;
-    
+
     EXPECT_CALL(mockDoor, unlock()).Times(1);
     helper.openDoor(&mockDoor);
 }
@@ -146,11 +146,11 @@ TEST(DoorMockTest, UnlockViaHelper) {
 TEST(DoorMockTest, StateCheckViaHelper) {
     MockDoor mockDoor;
     DoorHelper helper;
-    
+
     EXPECT_CALL(mockDoor, isDoorOpened())
         .Times(1)
         .WillOnce(Return(true));
-    
+
     EXPECT_TRUE(helper.getDoorState(&mockDoor));
 }
 
@@ -158,15 +158,13 @@ TEST(DoorMockTest, StateCheckViaHelper) {
 
 TEST(IntegrationTest, CloseBeforeTimeoutPreventsException) {
     TimedDoor testDoor(1);
-    
+
     std::thread closer([&testDoor]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         testDoor.lock();
     });
-    
+
     EXPECT_NO_THROW(testDoor.unlock());
     closer.join();
     EXPECT_FALSE(testDoor.isDoorOpened());
 }
-
-// ВСЕГО ТЕСТОВ: 14
